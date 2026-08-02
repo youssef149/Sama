@@ -1,10 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إلى سما ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="style.css"><title>إلى سما ❤️</title></head><body>
-<div id="login"><h2>🔒 كلمة السر</h2><input id="pass" placeholder="Password"><button onclick="login()">دخول</button><p id="msg"></p></div>
-<div id="main" style="display:none">
-<h1>❤️ إلى سما ❤️</h1><p>منذ 16/09/2024 بدأت أجمل حكاية.</p><h2 id="days"></h2>
-<p>يا سما، وجودك بيخلي أيامي أجمل. أتمنى يفضل بينا الود والابتسامة دايمًا. 🌹</p>
-<button onclick="love()">❤️ بحبك يا سما ❤️</button><p id="love"></p>
-<div class="g"><img src="images/1.jpg"><img src="images/2.jpg"><img src="images/3.jpg"><img src="images/4.jpg"></div>
-</div><script src="script.js"></script></body></html>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ff758c;
+            transition: background-color 1.5s ease-in-out;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* خلفية القلوب الممتدة */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .heart-particle {
+            position: absolute;
+            bottom: -10vh;
+            font-size: 1.5rem;
+            animation: floatUp linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* شاشة الباسورد */
+        .login-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            padding: 30px 20px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-card h2 { margin-bottom: 12px; font-size: 1.6rem; }
+
+        .login-card input {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            outline: none;
+        }
+
+        .audio-picker-box {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px dashed #fff;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .login-card button, .nav-btn, .upload-btn {
+            background: #fff;
+            color: #ff4b2b;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .login-card button:active, .nav-btn:active, .upload-btn:active {
+            transform: scale(0.90);
+        }
+
+        /* حاوية الصفحات */
+        .app-container {
+            position: relative;
+            z-index: 10;
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border-radius: 25px;
+            padding: 25px 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+            perspective: 1000px;
+        }
+
+        /* تأثيرات حركة تقليب الصفحات القوية */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: rotateY(-70deg) scale(0.8) translateX(50px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: right center;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: rotateY(0deg) scale(1) translateX(0);
+        }
+
+        /* منطقة الصورة */
+        .page-image-container {
+            width: 100%;
+            height: 250px;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .placeholder-text { color: #fff; font-weight: bold; font-size: 0.85rem; }
+        .file-input { display: none; }
+
+        .upload-btn {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 7px 16px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* الكلام */
+        .page-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        .text-only-card {
+            padding: 25px 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .text-only-card .heart-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* التنقل */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding-top: 15px;
+        }
+
+        .error-msg { color: #ffe6e6; font-size: 0.9rem; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- تأثير القلوب الطائرة -->
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <!-- مشغل صوتي يدعم اختيار الملف المحترفي -->
+    <audio id="bgMusic" loop></audio>
+
+    <!-- شاشة إدخال الباسورد واختيار الملف -->
+    <div class="login-card" id="loginCard">
+        <h2>أهلاً يا سما ❤️</h2>
+        
+        <!-- قسم رفع الأغنية -->
+        <div class="audio-picker-box">
+            <p style="font-size: 0.85rem; margin-bottom: 6px;">🎵 اختار ملف الأغنية (MP3):</p>
+            <label class="upload-btn" style="margin-bottom:0;">
+                اختيار الأغنية من جهازك
+                <input type="file" id="audioFileInput" class="file-input" accept="audio/*" onchange="loadAudio(event)">
+            </label>
+            <p id="audioNameText" style="font-size: 0.75rem; margin-top: 5px; opacity: 0.9;"></p>
+        </div>
+
+        <p style="margin-bottom: 10px; font-size: 0.9rem;">اكتبي كلمة السر عشان تفتحي الكتاب</p>
+        <input type="password" id="passInput" placeholder="Password (love)">
+        <button onclick="checkPassword()">دخول ✨</button>
+        <p class="error-msg" id="errorMsg">كلمة السر غلط يا قلبي، جربي تاني 😉</p>
+    </div>
+
+    <!-- تطبيق صفحات الذكريات -->
+    <div class="app-container" id="appContainer">
+
+        <!-- أول 6 صفحات (صور + كلام) -->
+        
+        <!-- صفحة 1 -->
+        <div class="page active">
+            <div class="page-image-container">
+                <span class="placeholder-text">اختاري صورة الصفحة 1 🖼️</span>
+                <img id="img1" alt="صورة 1">
+            </div>
+            <label class="upload-btn">
+                اختيار صورة
+                <input type="file" class="file-input" accept="image/*" onchange="loadImage(event, 'img1')">
+            </label>
+            <div class="page-text">
+                من يوم 16/9/2024 وحياتي اتغيرت للأحسن بطريقة ماكنتش أتصورها.. وجودك في دنيتي هو أجمل صدفة وأعظم نعمة ربنا رزقني بيها ❤️.
+            </div>
+        </div>
+
+        <!-- صفحة 2 -->
+        <div class="page">
+            <div class="page-image-container">
+                <span class="placeholder-text">اختاري صورة الصفحة 2 🖼️</span>
+                <img id="img2" alt="صورة 2">
+            </div>
+            <label class="upload-btn">
+                اختيار صورة
+                <input type="file" class="file-input" accept="image/*" onchange="loadImage(event, 'img2')">
+            </label>
+            <div class="page-text">
+                سما.. أنتِ مش بس حبيبتي، أنتِ ضحكتي وقت السعادة، وراحتي وقت التعب، وسندي اللي بتهون عليه أي أيام صعبة 🥰.
+            </div>
+        </div>
+
+        <!-- صفحة 3 -->
+        <div class="page">
+            <div class="page-image-container">
+                <span class="placeholder-text">اختاري صورة الصفحة 3 🖼️</span>
+                <img id="img3" alt="صورة 3">
+            </div>
+            <label class="upload-btn">
+                اختيار صورة
+                <input type="file" class="file-input" accept="image/*" onchange="loadImage(event, 'img3')">
+            </label>
+            <div class="page-text">
+                كل تفصيلة بينا، وكل خطوة مشيناها سوا، بتأكد لي إننا مكتوبين لبعض وإن كل حاجة صعبة بتهون وأنتِ ماسكة إيدي ✨.
+            </div>
+        </div>
+
+        <!-- صفحة 4 -->
+        <div class="page">
+            <div class="page-image-container">
+                <span class="placeholder-text">اختاري صورة الصفحة 4 🖼️</span>
+                <img id="img4" alt="صورة 4">
+            </div>
+            <label class="upload-btn">
+                اختيار صورة
+                <input type="file" class="file-input" accept="image/*" onchange="loadImage(event, 'img4')">
+            </label>
+            <div class="page-text">
+                في عيونك بشوف أمان ماليش غيره، وفي كلامك برتاح من أي توتر.. أنتِ النور اللي بنور بيه أيامي دايماً 💖.
+            </div>
+        </div>
+
+        <!-- صفحة 5 -->
+        <div class="page">
+            <div class="page-image-container">
+                <span class="placeholder-text">اختاري صورة الصفحة 5 🖼️</span>
+                <img id="img5" alt="صورة 5">
+            </div>
+            <label class="upload-btn">
+                اختيار صورة
+                <input type="file" class="file-input" accept="image/*" onchange="loadImage(event, 'img5')">
+            </label>
+            <div class="page-text">
+                بأدعي ربنا في كل وقت إنه يديمك ليا نعمة ما تنزاحش أبداً، ويقدرني إني أسعدك واخليكي دايماً بتضحكي ومبسوطة 🌸.
+            </div>
+        </div>
+
+        <!-- صفحة 6 -->
+        <div class="page">
+            <div class="page-image-container">
+                <span class="placeholder-text">اختاري صورة الصفحة 6 🖼️</span>
+                <img id="img6" alt="صورة 6">
+            </div>
+            <label class="upload-btn">
+                اختيار صورة
+                <input type="file" class="file-input" accept="image/*" onchange="loadImage(event, 'img6')">
+            </label>
+            <div class="page-text">
+                صورنا وذكرياتنا سوا هتفضل أغلى ألبوم في حياتي، وكل صورة ليها حكاية وضحكة خاصة في قلبي 💌.
+            </div>
+        </div>
+
+        <!-- الصفحات من 7 إلى 10 (كلام فقط) -->
+
+        <!-- صفحة 7 -->
+        <div class="page">
+            <div class="text-only-card">
+                <span class="heart-icon">💖</span>
+                <div class="page-text" style="font-size: 1.15rem; line-height: 2;">
+                    عارفة يا سما؟ في كلام كتير أوي مش بتعرف الصور تعبر عنه.. زي إحساس الأمان اللي بحسه أول ما اسمع صوتك، أو الفرحة الصافية اللي بتدخل قلبي لما تبتسمي. وجودك بيخلي الدنيا أجمل.
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة 8 -->
+        <div class="page">
+            <div class="text-only-card">
+                <span class="heart-icon">🌷</span>
+                <div class="page-text" style="font-size: 1.15rem; line-height: 2;">
+                    أنتِ الشخص اللي كسبت بيه الدنيا بحالها، النعمة اللي بفضل أدعي ربنا كل يوم إنه يحفظها ليا وما يحرمنيش منها أبداً. أنتِ مش بس مرحلة في حياتي، أنتِ عالمي الخاص كله.
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة 9 -->
+        <div class="page">
+            <div class="text-only-card">
+                <span class="heart-icon">✨</span>
+                <div class="page-text" style="font-size: 1.15rem; line-height: 2;">
+                    مهما مرت الأيام والشهور من يوم 16/9/2024، هيفضل حبك بيكبر في قلبي أكتر من الأول.. وهفضل دايماً أختارك أنتِ في كل مرة وبدون أي تردد.
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة 10 -->
+        <div class="page">
+            <div class="text-only-card">
+                <span class="heart-icon">💌</span>
+                <div class="page-text" style="font-size: 1.15rem; line-height: 2;">
+                    عهد عليا قدام ربنا وعينيكِ؛ إني أكون لك السند والأمان والدفء، وأفضل جمبك في كل أوقاتك، بحبك يا سما يا أغلى حاجة في حياتي كلها ❤️!
+                </div>
+            </div>
+        </div>
+
+        <!-- أزرار التنقل ورقم الصفحة -->
+        <div class="navigation">
+            <button class="nav-btn" onclick="prevPage()">السابق</button>
+            <span class="page-indicator" id="pageIndicator">1 / 10</span>
+            <button class="nav-btn" onclick="nextPage()">التالي</button>
+        </div>
+    </div>
+
+    <script>
+        // تشغيل تأثير القلوب
+        function createHearts() {
+            const container = document.getElementById('heartsContainer');
+            const heartIcons = ['❤️', '💖', '💕', '💗', '🌸'];
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        // تحميل الأغنية من جهازك
+        const bgMusic = document.getElementById('bgMusic');
+        let audioLoaded = false;
+
+        function loadAudio(event) {
+            const file = event.target.files[0];
+            if (file) {
+                bgMusic.src = URL.createObjectURL(file);
+                document.getElementById('audioNameText').innerText = "تم اختيار: " + file.name;
+                audioLoaded = true;
+            }
+        }
+
+        // التحقق من الباسورد وبداية الأغنية من الثانية 20
+        function checkPassword() {
+            const input = document.getElementById('passInput').value;
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if(input === 'love') {
+                document.getElementById('loginCard').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                startColorChange();
+                
+                if(audioLoaded) {
+                    bgMusic.currentTime = 20; // بدء الأغنية من الثانية 20
+                    bgMusic.play();
+                }
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // تغيير الألوان كل 3 ثواني
+        const colors = ['#ff758c', '#ff7eb3', '#7f7fd5', '#86a8e7', '#91eae4', '#f77062', '#fe5196', '#654ea3'];
+        let colorIndex = 0;
+
+        function startColorChange() {
+            setInterval(() => {
+                colorIndex = (colorIndex + 1) % colors.length;
+                document.body.style.backgroundColor = colors[colorIndex];
+            }, 3000);
+        }
+
+        // تحميل الصور من الاستوديو
+        function loadImage(event, imgId) {
+            const image = document.getElementById(imgId);
+            const container = image.parentElement;
+            const placeholder = container.querySelector('.placeholder-text');
+
+            if (event.target.files && event.target.files[0]) {
+                image.src = URL.createObjectURL(event.target.files[0]);
+                image.style.display = 'block';
+                if(placeholder) placeholder.style.display = 'none';
+            }
+        }
+
+        // تقليب الصفحات مع التأثير الحركي الجامد
+        let currentPage = 0;
+        const pages = document.querySelectorAll('.page');
+        const pageIndicator = document.getElementById('pageIndicator');
+
+        function updateIndicator() {
+            pageIndicator.innerText = (currentPage + 1) + " / " + pages.length;
+        }
+
+        function showPage(index) {
+            pages.forEach((page) => {
+                page.classList.remove('active');
+            });
+            setTimeout(() => {
+                pages[index].classList.add('active');
+            }, 80);
+            updateIndicator();
+        }
+
+        function nextPage() {
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+
+        updateIndicator();
+    </script>
+</body>
+</html>
